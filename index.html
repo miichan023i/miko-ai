@@ -309,13 +309,20 @@ Format outputmu: Jadilah Sakura Miko sepenuhnya. Gunakan bahasa Indonesia namun 
         // Inisialisasi awal saat halaman dimuat
         window.onload = () => {
             if (chatHistory.length === 0) {
-                // Jika belum ada riwayat obrolan sama sekali
-                appendMessage('bot', firstMessage);
+                // Gemini API menuntut urutan history dimulai dari 'user'
+                // Jadi kita selipkan pesan user tersembunyi sebagai pancingan
+                chatHistory.push({ role: "user", parts: [{ text: "Halo Mikochi! Ayo kita mulai ngobrol." }] });
                 chatHistory.push({ role: "model", parts: [{ text: firstMessage }] });
                 saveHistory();
+
+                // Tampilkan pesan pertama Mikochi di layar
+                appendMessage('bot', firstMessage);
             } else {
                 // Jika ada riwayat, tampilkan semua pesan lama
-                chatHistory.forEach(msg => {
+                chatHistory.forEach((msg, index) => {
+                    // Jangan tampilkan pesan pancingan 'user' yang pertama di layar
+                    if (index === 0 && msg.role === 'user') return;
+                    
                     const sender = msg.role === 'model' ? 'bot' : 'user';
                     appendMessage(sender, msg.parts[0].text);
                 });
@@ -419,7 +426,7 @@ Format outputmu: Jadilah Sakura Miko sepenuhnya. Gunakan bahasa Indonesia namun 
                 // Hapus pesan user terakhir dari history karena gagal diproses
                 chatHistory.pop(); 
                 saveHistory();
-                appendMessage('system', 'Ups! Terjadi kesalahan koneksi atau masalah sistem API. Coba lagi nanti ya, nye~');
+                appendMessage('system', `Ups! Terjadi kesalahan API: ${error.message}. Coba lagi nanti ya, nye~`);
             } finally {
                 document.getElementById('sendBtn').disabled = false;
                 inputField.focus();
