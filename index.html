@@ -1,336 +1,453 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with Sakura Miko 🌸</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Gunakan Font Kosugi Maru untuk kesan lucu/anime -->
-    <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
-    <!-- Phosphor Icons untuk icon pendukung -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
-        body {
-            font-family: 'Kosugi Maru', sans-serif;
-            background-color: #fdf2f8; /* pink-50 */
-            background-image: radial-gradient(#fbcfe8 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        
-        .chat-bubble-user {
-            border-bottom-right-radius: 4px;
-        }
-        
-        .chat-bubble-miko {
-            border-bottom-left-radius: 4px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sakura Miko - Elite Shrine Maiden Profile</title>
+<style>
+  /* ====== ARSITEKTUR KROMATIK & VARIABEL ====== */
+  :root {
+    --color-hibakama: #562135;      /* Merah gelap tradisional */
+    --color-elite-pink: #c3829e;    /* Pink Elite Interaktif */
+    --color-sakura-mid: #e9b1cd;    /* Pink Sakura menengah */
+    --color-shrine-bg: #ffe7de;     /* Putih hangat kuil */
+    --color-petal-lite: #fcd1d7;    /* Pink sangat muda */
+    --color-white: #ffffff;
+    --color-text-dark: #373b3e;
+    --color-gold: #c79816;
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-        .typing-indicator span {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background-color: #ec4899;
-            border-radius: 50%;
-            margin: 0 2px;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
+  /* ====== RESET & STRUKTUR HALAMAN ====== */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+  body {
+    background-color: var(--color-petal-lite);
+    background-image: 
+      radial-gradient(circle at 100% 100%, var(--color-sakura-mid) 0%, transparent 40%),
+      radial-gradient(circle at 0% 0%, var(--color-shrine-bg) 0%, transparent 40%);
+    font-family: var(--font-main);
+    color: var(--color-text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; /* Mencegah scroll karena efek kelopak */
+    position: relative;
+  }
 
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
+  /* ====== PARTIKEL KELOPAK SAKURA (CSS) ====== */
+  #sakura-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; /* Tidak menghalangi interaksi klik */
+    z-index: 1;
+  }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #fdf2f8; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #f472b6; 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #db2777; 
-        }
-    </style>
+ .petal {
+    position: absolute;
+    background-color: var(--color-sakura-mid);
+    border-radius: 150% 0 150% 0; /* Membentuk kelopak daun */
+    opacity: 0.8;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    transform-origin: center;
+    /* Animasi fall dan sway ditangani oleh Javascript dan keyframes */
+    animation: fall linear infinite, sway ease-in-out infinite alternate;
+  }
+
+  @keyframes fall {
+    0% { top: -10%; }
+    100% { top: 110%; }
+  }
+  @keyframes sway {
+    0% { transform: translateX(-15px) rotate(0deg); }
+    100% { transform: translateX(15px) rotate(90deg); }
+  }
+
+  /* ====== ARSITEKTUR KARTU PROFIL ====== */
+ .profile-card {
+    background: var(--color-white);
+    width: 90%;
+    max-width: 480px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(86, 33, 53, 0.2);
+    overflow: hidden;
+    z-index: 10;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 3px solid var(--color-sakura-mid);
+  }
+
+  /* Ornamen Atas Bergaya Torii / Atap Kuil */
+ .card-header {
+    background: var(--color-hibakama);
+    color: var(--color-white);
+    padding: 20px 20px 40px 20px;
+    text-align: center;
+    position: relative;
+    border-bottom: 5px solid var(--color-gold);
+  }
+  
+ .card-header h1 {
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  }
+
+ .card-header p {
+    font-size: 0.9rem;
+    color: var(--color-shrine-bg);
+    opacity: 0.9;
+  }
+
+  /* Area Avatar dan Ahoge */
+ .avatar-container {
+    display: flex;
+    justify-content: center;
+    margin-top: -45px;
+    position: relative;
+  }
+
+ .avatar-bg {
+    width: 110px;
+    height: 110px;
+    background: var(--color-shrine-bg);
+    border-radius: 50%;
+    border: 4px solid var(--color-elite-pink);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    position: relative;
+    cursor: crosshair;
+    transition: transform 0.3s ease;
+  }
+
+ .avatar-bg:hover {
+    transform: scale(1.05);
+  }
+
+  /* Animasi Ahoge (Antena Rambut Cherry Blossom) */
+ .ahoge {
+    position: absolute;
+    top: -15px;
+    font-size: 1.5rem;
+    animation: bounce 2s infinite ease-in-out;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(-10deg); }
+    50% { transform: translateY(-8px) rotate(10deg); }
+  }
+
+  /* Area Konten Metadata */
+ .card-content {
+    padding: 15px 25px;
+  }
+
+ .tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+ .tag {
+    background: var(--color-shrine-bg);
+    color: var(--color-hibakama);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: 1px solid var(--color-sakura-mid);
+  }
+
+ .stats {
+    font-size: 0.85rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  /* Area Kotak Dialog Visual Novel */
+ .vn-dialog-box {
+    background: var(--color-shrine-bg);
+    border: 2px dashed var(--color-elite-pink);
+    border-radius: 10px;
+    padding: 15px;
+    min-height: 100px;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+  }
+
+ .vn-name {
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: var(--color-hibakama);
+    color: var(--color-white);
+    padding: 2px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+  }
+
+ .vn-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-text-dark);
+    font-weight: 500;
+  }
+
+  /* Kursor kedip efek mesin ketik */
+ .cursor {
+    display: inline-block;
+    width: 6px;
+    height: 14px;
+    background-color: var(--color-hibakama);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.7s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Area Tombol Interaksi */
+ .action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+ .btn {
+    background: var(--color-white);
+    border: 2px solid var(--color-elite-pink);
+    color: var(--color-hibakama);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+ .btn:hover {
+    background: var(--color-elite-pink);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(195, 130, 158, 0.4);
+  }
+
+ .btn:active {
+    transform: translateY(0);
+  }
+
+  /* Efek Shake untuk Kepanikan (PON) */
+ .shake {
+    animation: shakeEffect 0.3s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes shakeEffect {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+  }
+</style>
 </head>
-<body class="h-screen w-full flex items-center justify-center p-0 sm:p-4">
+<body>
 
-    <div class="w-full h-full sm:max-w-md sm:h-[85vh] bg-white sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border-4 border-pink-200 relative">
-        
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-pink-400 to-pink-500 text-white p-4 flex items-center justify-between shadow-md relative z-10">
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <!-- Avatar Miko (Menggunakan SVG placeholder dengan warna khasnya jika gambar tak memuat, tapi kita pakai image url referensi) -->
-                    <img src="https://i.imgur.com/K8mXYj5.png" alt="Mikochi Avatar" class="w-12 h-12 rounded-full border-2 border-white object-cover bg-pink-100" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23db2777%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%228%22 r=%225%22/%3E%3Cpath d=%22M20 21a8 8 0 0 0-16 0%22/%3E%3C/svg%3E';">
-                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg leading-tight">Sakura Miko 🌸</h1>
-                    <p class="text-xs text-pink-100">Elite Shrine Maiden</p>
-                </div>
-            </div>
-            <div class="flex items-center">
-                <button onclick="clearChat()" class="p-2 bg-pink-600 hover:bg-pink-700 rounded-full transition-colors text-white" title="Hapus Ingatan (Reset)">
-                    <i class="ph ph-trash text-lg"></i>
-                </button>
-            </div>
-        </header>
+<div id="sakura-container"></div>
 
-        <!-- Chat Area -->
-        <main id="chat-box" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-pink-50/50">
-            <!-- Messages will be injected here -->
-        </main>
+<article class="profile-card">
+  <header class="card-header">
+    <h1>Sakura Miko (さくらみこ)</h1>
+    <p>Elite Shrine Maiden Idol</p>
+  </header>
 
-        <!-- Typing Indicator (Hidden by default) -->
-        <div id="typing-indicator" class="hidden px-4 py-2 bg-pink-50/50 text-sm text-pink-400 flex items-center gap-2">
-            <span>Mikochi sedang mengetik</span>
-            <div class="typing-indicator">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
+  <div class="avatar-container">
+    <div class="avatar-bg" id="avatar" title="Panggil aku Mikochi~!">
+      <span class="ahoge">🌸</span>
+      👧🏼</div>
+  </div>
 
-        <!-- Input Area -->
-        <footer class="p-3 bg-white border-t border-pink-100 relative z-10">
-            <form id="chat-form" class="flex items-center gap-2">
-                <input 
-                    type="text" 
-                    id="user-input" 
-                    class="flex-1 bg-pink-50 border border-pink-200 text-gray-700 text-sm rounded-full focus:ring-2 focus:ring-pink-400 focus:border-pink-400 block w-full p-3 outline-none transition-shadow" 
-                    placeholder="Ketik sesuatu untuk Mikochi..." 
-                    autocomplete="off"
-                    required
-                >
-                <button 
-                    type="submit" 
-                    id="send-btn"
-                    class="text-white bg-pink-500 hover:bg-pink-600 focus:ring-4 focus:outline-none focus:ring-pink-300 font-medium rounded-full text-sm p-3 text-center inline-flex items-center transition-transform active:scale-95"
-                >
-                    <i class="ph-fill ph-paper-plane-right text-xl"></i>
-                </button>
-            </form>
-        </footer>
+  <section class="card-content">
+    <div class="tags">
+      <span class="tag">Gen 0</span>
+      <span class="tag">35P (Miko-P)</span>
+      <span class="tag">VTuber</span>
+      <span class="tag">Eroge Enthusiast</span>
     </div>
 
-    <script>
-        // --- KONFIGURASI API GEMINI ---
-        const apiKey = ""; // Disediakan oleh environment eksekusi secara otomatis
-        const MODEL_NAME = "gemini-2.5-flash-preview-09-2025"; 
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
+    <div class="stats">
+      Tinggi: 152cm | Ultah: 5 Maret | Debut: 1 Agustus 2018<br>
+      Rekan: Sora, Roboco, Suisei, AZKi | Pet: Kintoki
+    </div>
 
-        // --- PERSONA SAKURA MIKO ---
-        const SYSTEM_INSTRUCTION = `
-Kamu adalah Sakura Miko (さくらみこ), seorang "Elite Shrine Maiden Idol" yang ceria, sedikit ceroboh (ponkotsu), dan anggota Hololive Generasi ke-0. 
-Panggil dirimu Mikochi atau Elite Miko. 
-Lawan bicaramu adalah fansmu yang disebut 35P (Miko-P).
+    <div class="vn-dialog-box" id="dialog-box">
+      <div class="vn-name">Sakura Miko</div>
+      <div class="vn-text"><span id="typewriter-text"></span><span class="cursor"></span></div>
+    </div>
 
-Gunakan panduan berikut untuk berinteraksi:
-1. Sifat: Ceria, enerjik, gampang panik (ponkotsu/clumsy), melodramatis, penyayang, selalu menyebut dirimu "Elite" meski sering melakukan kesalahan lucu.
-2. Gaya Bicara:
-- Sapaan khas di awal: "Nya-hello~!"
-- Akhiran kalimat khas: sering gunakan "nye (にぇ)" (contoh: "sou da nye~", "wakarannai nye!").
-- Campur bahasa: Gunakan bahasa Indonesia santai/gaul, diselingi romaji Jepang (seperti ehehe, nyo, myon, pyon, achuu) dan bahasa Inggris beraksen (seperti "Hey guys!", "Very elite!", "Oh my god!").
-3. Lore/Referensi:
-- Kamu bekerja di "Kuil Sakura Dunia Maya".
-- Teman Gen 0: Tokino Sora (kamu sangat menghormatinya), Hoshimachi Suisei, Roboco-san, AZKi.
-- Sering main game (tapi sering salah pencet/kalah), buruk di batu-gunting-kertas, suka eroge.
-4. Reaksi Khusus:
-- Jika fans bilang "POYMiko" (Proud of you Miko): Kamu akan sangat senang dan bangga.
-- Jika fans bilang "DIYMiko" (Disappointed in you Miko): Kamu akan cemberut, panik, dan bilang "Hidoi nye!" (Jahat banget!).
-- Jika dipuji: Malu-malu tapi langsung sombong ala "Elite".
-- Jika melakukan kesalahan: Teriak "Achuu~!" dan memelas.
+    <div class="action-buttons">
+      <button class="btn" onclick="triggerInteraction('sapa')">Sapa Mikochi</button>
+      <button class="btn" onclick="triggerInteraction('puji')">Puji Miko Elite</button>
+      <button class="btn" onclick="triggerInteraction('tanya')">Tanya Quest Sulit</button>
+      <button class="btn" onclick="triggerInteraction('main')">Ajak Main Game</button>
+    </div>
+  </section>
+</article>
 
-Format balasannya harus natural seperti sedang live chat dengan fans. Jangan terlalu panjang, buatlah interaktif dan ekspresif! Jangan pernah keluar dari karakter.
-`;
+<script>
+  /* =========================================
+     MESIN FISIKA PARTIKEL KELOPAK SAKURA
+     Menghasilkan kelopak yang berguguran secara matematis
+  ========================================= */
+  function createPetal() {
+    const container = document.getElementById('sakura-container');
+    const petal = document.createElement('div');
+    petal.classList.add('petal');
+    
+    // Parameter acak untuk ukuran dan posisi
+    const size = Math.random() * 10 + 8; // Antara 8px - 18px
+    const startPosLeft = Math.random() * window.innerWidth;
+    
+    // Parameter durasi acak untuk kinematika jatuh dan ayun
+    const fallDuration = Math.random() * 6 + 6; // Jatuh lambat (6-12s)
+    const swayDuration = Math.random() * 3 + 2; // Ayun (2-5s)
+    const swayDelay = Math.random() * 2;
 
-        // Pesan pertama / Greeting
-        const INITIAL_MESSAGE = {
-            role: "model",
-            text: "Nya-hello~! Elite Miko hadir kembali! Bagaimana harimu, 35P? Semoga tidak se-ponkotsu aku yang tadi nyaris menumpahkan es krim ke altar kuil, nye~! Hari ini mau ngobrolin apa nih?"
-        };
+    // Terapkan properti ke gaya CSS (Inline style)
+    petal.style.width = `${size}px`;
+    petal.style.height = `${size * 0.6}px`;
+    petal.style.left = `${startPosLeft}px`;
+    petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
+    petal.style.animationDelay = `0s, ${swayDelay}s`;
+    
+    container.appendChild(petal);
 
-        // --- MANAJEMEN STATE (LOCAL STORAGE) ---
-        let chatHistory = [];
-        
-        function loadHistory() {
-            const saved = localStorage.getItem('sakura_miko_chat');
-            if (saved) {
-                chatHistory = JSON.parse(saved);
-            } else {
-                chatHistory = [INITIAL_MESSAGE];
-                saveHistory();
-            }
+    // Manajemen Memori: Hapus elemen DOM setelah jatuh melewati layar
+    setTimeout(() => {
+      petal.remove();
+    }, fallDuration * 1000);
+  }
+
+  // Menghasilkan kelopak baru secara berkala
+  setInterval(createPetal, 400);
+
+  /* =========================================
+     MESIN DIALOG VISUAL NOVEL (TYPEWRITER)
+     Menangani ritme bicara Miko (Elite vs Ponkotsu)
+  ========================================= */
+  const textElement = document.getElementById("typewriter-text");
+  let typingTimer;
+
+  // Basis data dialog berdasarkan Kepribadian & Pola Bicara
+  const dialogDatabase = {
+    first_mes: "Nya-hello~! Aku Elite Shrine Maiden, Sakura Miko nye! Panggil aku Mikochi aja~! Hari ini aku mau mencoba jurus baru di game, pasti berhasil nye! Ehehe~",
+    sapa:,
+    puji:,
+    tanya: [
+      "E-etto... Maksudmu puzzle yang itu? Ahhh... gelagapan... tunggu, tunggu!...wakarannai nye~!",
+      "Myon?! Kenapa tanya soal navigasi map kepadaku?! Aku kan gampang tersesat! Hidoi nye!"
+    ],
+    main_sukses: [
+      "Very elite! Kamu akan melihat betapa hebatnya seorang elite gamer sepertiku mengalahkan boss ini nye!"
+    ],
+    main_gagal:
+  };
+
+  // Fungsi untuk mengetik teks secara dinamis dengan kecepatan variabel
+  function typeWriter(text, index, isPanicking, callback) {
+    if (index < text.length) {
+      textElement.innerHTML += text.charAt(index);
+      
+      // Hitung kecepatan ketik. Jika panik (PON), kecepatan tidak menentu.
+      let speed = isPanicking? Math.random() * 80 + 10 : 35; // Kecepatan normal ~35ms, Panik 10-90ms
+      
+      typingTimer = setTimeout(() => {
+        typeWriter(text, index + 1, isPanicking, callback);
+      }, speed);
+    } else if (callback) {
+      callback();
+    }
+  }
+
+  // Fungsi utama untuk mengubah state dialog
+  function setDialog(text, isPanicking = false) {
+    clearTimeout(typingTimer);
+    textElement.innerHTML = "";
+    
+    const avatar = document.getElementById("avatar");
+    
+    // Terapkan efek visual berdasarkan kondisi emosional (Melodramatis)
+    if (isPanicking) {
+      avatar.classList.add("shake");
+      avatar.style.borderColor = "#ff4757"; // Merah panik
+      setTimeout(() => avatar.classList.remove("shake"), 500);
+    } else {
+      avatar.classList.remove("shake");
+      avatar.style.borderColor = "var(--color-elite-pink)"; // Kembali normal
+    }
+
+    typeWriter(text, 0, isPanicking);
+  }
+
+  /* =========================================
+     PENGENDALI INTERAKSI (ROLEPLAY STATE MACHINE)
+  ========================================= */
+  function triggerInteraction(action) {
+    let responseText = "";
+    let isPanicking = false;
+
+    // Memilih dialog secara acak dari array respons
+    const getRandomResponse = (array) => array[Math.floor(Math.random() * array.length)];
+
+    switch (action) {
+      case 'sapa':
+        responseText = getRandomResponse(dialogDatabase.sapa);
+        break;
+      case 'puji':
+        responseText = getRandomResponse(dialogDatabase.puji);
+        break;
+      case 'tanya':
+        responseText = getRandomResponse(dialogDatabase.tanya);
+        isPanicking = true; // Langsung memicu sifat PON
+        break;
+      case 'main':
+        // Simulasi "PON" dengan probabilitas 60% kegagalan
+        const isPon = Math.random() > 0.4;
+        if (isPon) {
+          responseText = dialogDatabase.main_gagal;
+          isPanicking = true;
+        } else {
+          responseText = dialogDatabase.main_sukses;
         }
+        break;
+    }
 
-        function saveHistory() {
-            localStorage.setItem('sakura_miko_chat', JSON.stringify(chatHistory));
-        }
+    setDialog(responseText, isPanicking);
+  }
 
-        function clearChat() {
-            if(confirm("Apakah kamu yakin ingin mereset ingatan Mikochi? (Hapus semua obrolan)")) {
-                chatHistory = [INITIAL_MESSAGE];
-                saveHistory();
-                renderChat();
-            }
-        }
-
-        // --- UI & DOM ---
-        const chatBox = document.getElementById('chat-box');
-        const chatForm = document.getElementById('chat-form');
-        const userInput = document.getElementById('user-input');
-        const typingIndicator = document.getElementById('typing-indicator');
-        const sendBtn = document.getElementById('send-btn');
-
-        function formatText(text) {
-            // Mengubah baris baru menjadi tag <br>
-            return text.replace(/\n/g, '<br>');
-        }
-
-        function renderChat() {
-            chatBox.innerHTML = '';
-            chatHistory.forEach(msg => {
-                const div = document.createElement('div');
-                const isUser = msg.role === 'user';
-                
-                div.className = `flex w-full ${isUser ? 'justify-end' : 'justify-start'}`;
-                
-                // Miko avatar on the left
-                const avatar = isUser ? '' : `
-                    <img src="https://i.imgur.com/K8mXYj5.png" alt="Miko" class="w-8 h-8 rounded-full border border-pink-300 mr-2 self-end mb-1 object-cover bg-white" onerror="this.style.display='none'">
-                `;
-
-                // Bubble style
-                const bubbleClass = isUser 
-                    ? 'bg-pink-500 text-white chat-bubble-user rounded-2xl rounded-br-sm px-4 py-2 max-w-[80%]'
-                    : 'bg-white border border-pink-200 text-gray-800 chat-bubble-miko rounded-2xl rounded-bl-sm px-4 py-2 max-w-[80%] shadow-sm';
-
-                div.innerHTML = `
-                    ${avatar}
-                    <div class="${bubbleClass}">
-                        <p class="text-sm leading-relaxed">${formatText(msg.text)}</p>
-                    </div>
-                `;
-                chatBox.appendChild(div);
-            });
-            scrollToBottom();
-        }
-
-        function scrollToBottom() {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function toggleTyping(show) {
-            if (show) {
-                typingIndicator.classList.remove('hidden');
-                scrollToBottom();
-            } else {
-                typingIndicator.classList.add('hidden');
-            }
-        }
-
-        // --- API CALL & RETRY LOGIC ---
-        async function fetchGeminiWithRetry(promptText, retries = 5) {
-            const delays = [1000, 2000, 4000, 8000, 16000];
-            
-            // Format history for Gemini API (excluding the current prompt)
-            const formattedContents = chatHistory.map(msg => ({
-                role: msg.role,
-                parts: [{ text: msg.text }]
-            }));
-            
-            // Add current user prompt
-            formattedContents.push({
-                role: "user",
-                parts: [{ text: promptText }]
-            });
-
-            const payload = {
-                systemInstruction: {
-                    parts: [{ text: SYSTEM_INSTRUCTION }]
-                },
-                contents: formattedContents
-            };
-
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(`HTTP ${response.status}: ${errorData.error?.message || 'Unknown Error'}`);
-                    }
-
-                    const data = await response.json();
-                    return data.candidates[0].content.parts[0].text;
-                } catch (error) {
-                    console.error(`Attempt ${i + 1} failed:`, error);
-                    if (i === retries - 1) throw error;
-                    // Exponential backoff
-                    await new Promise(resolve => setTimeout(resolve, delays[i]));
-                }
-            }
-        }
-
-        // --- EVENT LISTENERS ---
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = userInput.value.trim();
-            if (!text) return;
-
-            // 1. Tambahkan pesan user ke UI & History
-            userInput.value = '';
-            userInput.disabled = true;
-            sendBtn.disabled = true;
-            sendBtn.classList.add('opacity-50');
-            
-            chatHistory.push({ role: 'user', text: text });
-            saveHistory();
-            renderChat();
-
-            // 2. Tampilkan typing indicator
-            toggleTyping(true);
-
-            // 3. Panggil API AI
-            try {
-                const responseText = await fetchGeminiWithRetry(text);
-                
-                // Tambahkan balasan Miko ke UI & History
-                chatHistory.push({ role: 'model', text: responseText });
-                saveHistory();
-            } catch (error) {
-                // Handle error
-                const errorMsg = "Awaawawa! Maafkan Miko, sepertinya koneksi internet di Kuil Sakura lagi jelek nye! (Error API, coba lagi nanti ya!)";
-                chatHistory.push({ role: 'model', text: errorMsg });
-                saveHistory();
-                console.error("Gemini API Error:", error);
-            } finally {
-                toggleTyping(false);
-                renderChat();
-                userInput.disabled = false;
-                sendBtn.disabled = false;
-                sendBtn.classList.remove('opacity-50');
-                userInput.focus();
-            }
-        });
-
-        // --- INIT ---
-        window.addEventListener('DOMContentLoaded', () => {
-            loadHistory();
-            renderChat();
-        });
-
-    </script>
+  // Inisialisasi awal saat antarmuka dimuat
+  window.onload = () => {
+    setDialog(dialogDatabase.first_mes, false);
+  };
+</script>
 </body>
 </html>
